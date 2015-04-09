@@ -1,0 +1,4 @@
+Initialism - Long Form - Description
+
+NM - "Not made" - not tested to compile.
+UT - "Untested" - Compiles, but not tested to run properly.
