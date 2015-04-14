@@ -1,0 +1,7 @@
+This file contains instructions for configuring the Raspberry Pi (RPi) used in this project. 
+
+SETTING UP I2C
+Follow the steps found on the following site.
+https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
+
+
