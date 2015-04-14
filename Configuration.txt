@@ -1,0 +1,13 @@
+This file contains instructions for configuring the Raspberry Pi (RPi) used in this project. 
+'#' at the beginning of a line means this is a command entered onto the command-line verbatim.
+
+SETTING UP I2C
+Follow the steps found on the following site.
+https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
+
+CREATING SQLITE DATABASE
+#sqlite3 temp.db
+(now within sqlite program)(will see 'sqlite>' instead of 'USER@MACHINE PWD $' at beginning of line)
+#create table Temp(date text NOT NULL, time text NOT NULL, temp real NOT NULL);
+#.separator ,
+
