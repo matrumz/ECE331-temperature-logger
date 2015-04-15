@@ -12,11 +12,11 @@ sub get_raw_temp {
 	my @c_ret = `$command`;
 
 	# Return with error if command failed
-	return -1 if @c_ret != 2;
+	return -501 if @c_ret != 2;
 	foreach my $line (@c_ret) {
 		# Return with error if data is bad
 		# Simultaneously take out newline char in case value is good
-		return -2 if $line !~ s/^(0x\w\w)\n$/$1/;
+		return -502 if $line !~ s/^(0x\w\w)\n$/$1/;
 	}
 
 	# Convert 12bit ADC value to decimal and return
