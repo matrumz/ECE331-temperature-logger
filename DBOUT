@@ -1,0 +1,5 @@
+
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE T(Date TEXT DEFAULT (DATE('now', 'localtime')) NOT NULL, Time TEXT DEFAULT (TIME('now', 'localtime')) NOT NULL, Temperature REAL NOT NULL);
+COMMIT;
