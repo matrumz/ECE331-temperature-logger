@@ -11,3 +11,5 @@ CREATING SQLITE DATABASE (or user can just create temp.db and let updateDB.pl cr
 #create table T(Date TEXT DEFAULT (DATE('now', 'localtime')) NOT NULL, Time TEXT DEFAULT (TIME('now', 'localtime')) NOT NULL, Temperature REAL);
 #.separator ,
 
+SET UP PERL TO UPDATE SQLITE DATABASE
+#sudo apt-get install libdbi-perl libdbd-sqlite3-perl

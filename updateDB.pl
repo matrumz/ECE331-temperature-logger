@@ -6,14 +6,16 @@ use DBI;
 # The form of this script is used from:
 # http://www.tutorialspoint.com/sqlite/sqlite_perl.htm
 
-# Initial constant values
+# Database connection setup values
 my $driver = "SQLite";
 my $database = "temp.db";
 my $dsn = "DBI:$driver:dbname=$database";
 my $userid = "";
 my $password = "";
+# Database information
 my $table = "T";
 my $column = "Temperature";
+# Commands
 my $create_table_stmt = "CREATE TABLE IF NOT EXISTS $table(
 	Date TEXT DEFAULT (DATE('now', 'localtime')) NOT NULL, 
 	Time TEXT DEFAULT (TIME('now', 'localtime')) NOT NULL, 
