@@ -5,7 +5,7 @@ SETTING UP I2C
 Follow the steps found on the following site.
 https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
 
-CREATING SQLITE DATABASE
+CREATING SQLITE DATABASE (or user can just create temp.db and let updateDB.pl create table)
 #sqlite3 temp.db
 (now within sqlite program)(will see 'sqlite>' instead of 'USER@MACHINE PWD $' at beginning of line)
 #create table T(Date TEXT DEFAULT (DATE('now', 'localtime')) NOT NULL, Time TEXT DEFAULT (TIME('now', 'localtime')) NOT NULL, Temperature REAL);

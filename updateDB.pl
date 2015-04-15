@@ -29,7 +29,7 @@ print "Opened $database database successfully\n";
 # Create table if necessary
 $dbh->do($create_table_stmt) or die $DBI::errstr;
 
-# Sample and update table every second
+# Sample and update table every minute
 while(1) {
 	# Take a sample
 	my $temp = `$query`;
@@ -37,7 +37,7 @@ while(1) {
 	$dbh->do($update_table_stmt."VALUES(".
 		($temp > -500 ? $temp:"NULL").
 		");") or warn $DBI::errstr;
-	sleep 1;	
+	sleep 60;	
 }
 
 # Explicitly disconnect (should never happen)
