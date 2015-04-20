@@ -36,7 +36,7 @@ function basic_graph($data) {
 	# http://www.plus2net.com/php_tutorial/gd-linegp.php
 
 	# Bounds and spacing constants
-	$x_gap = .5;
+	$x_gap = 1;
 	$x_max = (DPTS+1)*$x_gap;
 	$y_max = 300;
 	$count = 0;
@@ -81,8 +81,32 @@ function basic_graph($data) {
 		# No longer the first point
 		$first_p = False;
 	}
+
+	# Overlay a simple grid
+	$ps = basic_grid($ps, $x_max, $y_max);
+
 	# Export image and remove from memory
 	imagepng($ps);
 	imagedestroy($ps);
+}
+
+function basic_grid($im, $x_max, $y_max) {
+	$x_lines = 24;
+	$y_lines  = 15;
+	$grid_color = imagecolorallocate($im, 0, 0, 0);
+
+	# Vertical grid lines
+	for ($i=1; $i<$x_lines; $i++) {
+		$x = ($x_max / $x_lines) * $i;
+		imagedashedline($im, $x, 0, $x, $y_max, $grid_color);
+	}
+	
+	# Horizontal grid lines
+	for ($i=1; $i<$y_lines; $i++) {
+		$y = ($y_max / $y_lines) * $i;
+		imagedashedline($im, 0, $y, $x_max, $y, $grid_color);
+	}
+
+	return $im;
 }
 ?>
