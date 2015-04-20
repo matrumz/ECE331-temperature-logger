@@ -1,6 +1,11 @@
 <?php
 header("Content-Type: image/png");
 define ("DPTS", 1440);
+# YSCALAR => how many pts per degF
+define ("YSCALAR", 1);
+# XSCALAR => how many pts per minute
+#define ("XSCALAR", 1);
+$protocol = "sqlite";
 $database = "temp.db";
 $table = "T";
 $qry = "SELECT * FROM T ORDER BY Date DESC, Time DESC;";
@@ -9,7 +14,7 @@ $data;
 # Connect to database and pull all data
 try {
 	# Connect
-	$dbh = new PDO("sqlite:$database");
+	$dbh = new PDO("$protocol:$database");
 	# Set errormode to Exceptions
 	$dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 	# Capture table data
@@ -24,7 +29,7 @@ try {
 $dbh = NULL;
 
 # Develop a "dumb" basic graph intially that displays
-# most recent 24 hours WORTH of temp data, but not limited to past 23 hours
+# most recent 24 hours WORTH of temp data, but not limited to past 24 hours
 basic_graph($data);
 
 # Time permitting, a smart graph will be developed that will interpret time
@@ -45,7 +50,7 @@ function basic_graph($data) {
 	# Not actually limited to the past 24 hours
 	$temps_24h = array_fill(0, DPTS, -500);
 	for ($i=0; $i<DPTS; $i++) {
-		$temps_24h[$i] = $data[$i]['Temperature'];
+		$temps_24h[$i] = $data[$i]['Temperature'] * YSCALAR;
 	}
 	
 	# Create plot-space
@@ -91,21 +96,46 @@ function basic_graph($data) {
 }
 
 function basic_grid($im, $x_max, $y_max) {
-	$x_lines = 24;
-	$y_lines  = 15;
+	# Spacing between x-grids -> measured in hours
+	$x_spacing = 1;
+	# Spacing between y-grids -> measured in degF
+	$y_spacing = 10 * YSCALAR;
+#	$x_lines = 24;
+#	$y_lines  = 15;
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
 
 	# Vertical grid lines
-	for ($i=1; $i<$x_lines; $i++) {
-		$x = ($x_max / $x_lines) * $i;
-		imagedashedline($im, $x, 0, $x, $y_max, $grid_color);
+	
+
+	# Horizontal grid lines
+	# Start with solid y=0degF line
+	$y_0 = $y_max / 2;
+	imageline($im, 0, $y_0, $x_max, $y_0, $grid_color);
+	# Draw remaining horizontal lines
+	for ($i=1; 1; $i++) {
+		# Check to make sure still in bounds of image
+		# This controls exit of loop instead of for-statement
+		# Also calculates how far this line will be from y=0
+		if (($y = $y_spacing * $i) + $y_0 > $y_max) {
+			break;
+		}
+		# Draw grid lines on either side of y=0
+		imagedashedline($im, 0, $y_0-$y, $x_max, $y_0-$y, $grid_color);
+		imagedashedline($im, 0, $y_0+$y, $x_max, $y_0+$y, $grid_color);
 	}
 	
+	
+	# Vertical grid lines
+#	for ($i=1; $i<$x_lines; $i++) {
+#		$x = ($x_max / $x_lines) * $i;
+#		imagedashedline($im, $x, 0, $x, $y_max, $grid_color);
+#	}
+	
 	# Horizontal grid lines
-	for ($i=1; $i<$y_lines; $i++) {
-		$y = ($y_max / $y_lines) * $i;
-		imagedashedline($im, 0, $y, $x_max, $y, $grid_color);
-	}
+#	for ($i=1; $i<$y_lines; $i++) {
+#		$y = ($y_max / $y_lines) * $i;
+#		imagedashedline($im, 0, $y, $x_max, $y, $grid_color);
+#	}
 
 	return $im;
 }
