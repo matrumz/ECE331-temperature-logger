@@ -104,10 +104,10 @@ function basic_grid($im, $x_max, $y_max) {
 
 	# Vertical grid lines
 	for ($i=0; 1; $i++) {
-		# Start @ "current" time (far right is x_max)
-		# Draw lines from right to left, do not go beyond x_min (0)
+		# Start @ "current" time (far right is x_max and longest ago)
+		# Draw lines from left to right, do not go beyond x_max
 		# This controls exit of loop instead of for-statement
-		if (($x = $x_max - ($x_spacing * $i)) < 0) {
+		if (($x = $x_spacing * $i) > $x_max) {
 			break;
 		}
 		imagedashedline($im, $x, 0, $x, $y_max, $grid_color);
