@@ -4,7 +4,7 @@ define ("DPTS", 1440);
 # YSCALAR => how many pts per degF
 define ("YSCALAR", 1);
 # XSCALAR => how many pts per minute
-#define ("XSCALAR", 1);
+define ("XSCALAR", 1);
 $protocol = "sqlite";
 $database = "temp.db";
 $table = "T";
@@ -41,9 +41,9 @@ function basic_graph($data) {
 	# http://www.plus2net.com/php_tutorial/gd-linegp.php
 
 	# Bounds and spacing constants
-	$x_gap = 1;
+	$x_gap = 1 * XSCALAR;
 	$x_max = (DPTS+1)*$x_gap;
-	$y_max = 300;
+	$y_max = 300 + 1;
 	$count = 0;
 	
 	# Collect most recent 24 hours WORTH of temp data
@@ -96,16 +96,22 @@ function basic_graph($data) {
 }
 
 function basic_grid($im, $x_max, $y_max) {
-	# Spacing between x-grids -> measured in hours
-	$x_spacing = 1;
+	# Spacing between x-grids -> measured in minutes
+	$x_spacing = 60 * XSCALAR;
 	# Spacing between y-grids -> measured in degF
 	$y_spacing = 10 * YSCALAR;
-#	$x_lines = 24;
-#	$y_lines  = 15;
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
 
 	# Vertical grid lines
-	
+	for ($i=0; 1; $i++) {
+		# Start @ "current" time (far right is x_max)
+		# Draw lines from right to left, do not go beyond x_min (0)
+		# This controls exit of loop instead of for-statement
+		if (($x = $x_max - ($x_spacing * $i)) < 0) {
+			break;
+		}
+		imagedashedline($im, $x, 0, $x, $y_max, $grid_color);
+	}
 
 	# Horizontal grid lines
 	# Start with solid y=0degF line
@@ -123,19 +129,6 @@ function basic_grid($im, $x_max, $y_max) {
 		imagedashedline($im, 0, $y_0-$y, $x_max, $y_0-$y, $grid_color);
 		imagedashedline($im, 0, $y_0+$y, $x_max, $y_0+$y, $grid_color);
 	}
-	
-	
-	# Vertical grid lines
-#	for ($i=1; $i<$x_lines; $i++) {
-#		$x = ($x_max / $x_lines) * $i;
-#		imagedashedline($im, $x, 0, $x, $y_max, $grid_color);
-#	}
-	
-	# Horizontal grid lines
-#	for ($i=1; $i<$y_lines; $i++) {
-#		$y = ($y_max / $y_lines) * $i;
-#		imagedashedline($im, 0, $y, $x_max, $y, $grid_color);
-#	}
 
 	return $im;
 }
