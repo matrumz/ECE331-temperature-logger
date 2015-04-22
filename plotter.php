@@ -36,7 +36,8 @@ basic_graph($data);
 # and will show blank spaces for missing data in actual past 24 hours
 #smart_graph($data);
 
-function basic_graph($data) {
+function basic_graph($data) 
+{
 	# Follows tutorial from:
 	# http://www.plus2net.com/php_tutorial/gd-linegp.php
 
@@ -44,7 +45,7 @@ function basic_graph($data) {
 	$x_min = 0;
 	$y_min = 0;
 	$x_left_frame = 100;
-	$x_right_frame = 0;
+	$x_right_frame = 10;
 	$y_top_frame = 10;
 	$y_bottom_frame = 100;
 	$x_plot_gap = 1 * XSCALAR;
@@ -101,14 +102,16 @@ function basic_graph($data) {
 	}
 
 	# Overlay a simple grid
-	$ps = basic_grid($ps, $x_plot_min, $x_plot_max, $y_plot_min, $y_plot_max);
+	$ps = basic_grid($ps, $x_plot_min, $x_plot_max, $y_plot_min, 
+								$y_plot_max);
 
 	# Export image and remove from memory
 	imagepng($ps);
 	imagedestroy($ps);
 }
 
-function basic_grid($im, $x_min, $x_max, $y_min, $y_max) {
+function basic_grid($im, $x_min, $x_max, $y_min, $y_max) 
+{
 	# Spacing between x-grids -> measured in minutes
 	$x_spacing = 60 * XSCALAR;
 	# Spacing between y-grids -> measured in degF
@@ -135,12 +138,14 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max) {
 		# Check to make sure still in bounds of image
 		# This controls exit of loop instead of for-statement
 		# Also calculates how far this line will be from y=0
-		if (($y = ($y_spacing * $i) ) + $y_0 > $y_max) {
+		if (($y = $y_spacing * $i) + $y_0 > $y_max) {
 			break;
 		}
 		# Draw grid lines on either side of y=0
-		imagedashedline($im, $x_min, $y_0-$y, $x_max, $y_0-$y, $grid_color);
-		imagedashedline($im, $x_min, $y_0+$y, $x_max, $y_0+$y, $grid_color);
+		imagedashedline($im, $x_min, $y_0-$y, $x_max, $y_0-$y, 
+								$grid_color);
+		imagedashedline($im, $x_min, $y_0+$y, $x_max, $y_0+$y, 
+								$grid_color);
 	}
 
 	return $im;
