@@ -52,7 +52,7 @@ function basic_graph($data)
 	$x_right_frame = 10;
 	$y_top_frame = 10;
 	$y_bottom_frame = 50;
-	$x_plot_gap = 1 * XSCALAR;
+	$x_plot_gap = 1 * XSCALAR; # DON'T CHANGE THIS
 
 	# Bounds of plot
 	$x_plot_min = $x_min + $x_left_frame;
@@ -126,7 +126,7 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 	# Spacing between x-grids -> measured in minutes
 	$x_spacing = 60 * XSCALAR;
 	# Spacing between y-grids -> measured in degF
-	$y_spacing = 10;
+	$y_spacing = 5;
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
 	# Label font size
 	$fs = 7;
@@ -197,14 +197,22 @@ function get_y_off($val)
 	# Offsets (return values) are chosen individually 
 	# by eye-evaluation tuning
 	if ($val >= 100) {
+		# Case positive 3 digits
 		return 17;
 	} else if ($val >= 10) {
+		# Case positive 2 digits
 		return 12;
 	} else if ($val <= -100) {
+		# Case negative 3 digits
 		return 23;
 	} else if ($val <= -10) {
+		# Case negative 2 digits
 		return 17;
+	} else if ($val < 0) {
+		# Case negative 1 digit
+		return 12;
 	} else {
+		# Case positive 1 digit or 0
 		return 7;
 	}
 }
