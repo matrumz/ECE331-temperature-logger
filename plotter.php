@@ -54,14 +54,14 @@ function basic_graph($data)
 	$x_plot_min = $x_min + $x_left_frame;
 	$x_plot_max = (DPTS+1) * $x_plot_gap + $x_plot_min;
 	$y_plot_min = $y_min + $y_top_frame;
-	$y_plot_max = 200 + 1 + $y_plot_min;
+	$y_plot_max = 200 + $y_plot_min;
 
 	# Upper bounds of Image
 	$x_max = $x_plot_max + $x_right_frame;
 	$y_max = $y_plot_max + $y_bottom_frame;
 
 	# y=0
-	$y_0 = $y_plot_max - 40;
+	$y_0 = $y_plot_max -100;#- 40;
 	
 	# Collect most recent 24 hours WORTH of temp data
 	# Not actually limited to the past 24 hours
@@ -128,10 +128,10 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
 	# Label font size
 	$fs = 7;
-	# Y label x-offset
-	$yxo = 18;
 	# X label y-offset
 	$xyo = 20;
+	# Y label y-offset
+	$yyo = 3;
 
 	# Vertical grid lines
 	for ($i=0; 1; $i++) {
@@ -152,6 +152,10 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 	# Horizontal grid lines
 	# Start with solid y=0degF line
 	imageline($im, $x_min, $y_0, $x_max, $y_0, $grid_color);
+	# Get y-grid-label x-axis offset based off label's length
+	$off_0 = get_y_off(0);
+	imagettftext($im, $fs, 0, $x_min-$off_0, $y_0+$yyo, 
+						$grid_color, FONT, "0");
 	# Draw upper horizontal grid lines
 	for ($i=1; 1; $i++) {
 		# Check to stay in bounds
@@ -162,8 +166,10 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 								$grid_color);
 		# Labels lines
 		$label = $i * $y_spacing;
-		imagettftext($im, $fs, 0, $x_min-$yxo, $y_0-$y+3, $grid_color, 
-							FONT, "$label");
+		# Get y-grid-label x-axis offset based off label's length
+		$off = get_y_off($label);
+		imagettftext($im, $fs, 0, $x_min-$off, $y_0-$y+$yyo, 
+						$grid_color, FONT, "$label");
 	}
 	# Draw lower horizontal grid lines
 	for ($i=1; 1; $i++) {
@@ -174,11 +180,30 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 		imagedashedline($im, $x_min, $y_0+$y, $x_max, $y_0+$y, 
 								$grid_color);
 		# Labels lines
-		$label = $i * $y_spacing;
-		imagettftext($im, $fs, 0, $x_min-$yxo, $y_0+$y+3, $grid_color, 
-							FONT, "-$label");
+		$label = $i * $y_spacing * -1;
+		# Get y-grid-label x-axis offset based off label's length
+		$off = get_y_off($label);
+		imagettftext($im, $fs, 0, $x_min-$off, $y_0+$y+$yyo, 
+						$grid_color, FONT, "$label");
 	}
 
 	return $im;
+}
+
+function get_y_off($val) 
+{
+	# Offsets (return values) are chosen individually 
+	# by eye-evaluation tuning
+	if ($val >= 100) {
+		return 17;
+	} else if ($val >= 10) {
+		return 12;
+	} else if ($val <= -100) {
+		return 23;
+	} else if ($val <= -10) {
+		return 17;
+	} else {
+		return 7;
+	}
 }
 ?>
