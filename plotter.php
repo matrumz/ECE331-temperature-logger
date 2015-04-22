@@ -40,11 +40,24 @@ function basic_graph($data) {
 	# Follows tutorial from:
 	# http://www.plus2net.com/php_tutorial/gd-linegp.php
 
-	# Bounds and spacing constants
-	$x_gap = 1 * XSCALAR;
-	$x_max = (DPTS+1)*$x_gap;
-	$y_max = 300 + 1;
-	$count = 0;
+	# Lower bounds and frame sizes of image
+	$x_min = 0;
+	$y_min = 0;
+	$x_left_frame = 100;
+	$x_right_frame = 0;
+	$y_top_frame = 10;
+	$y_bottom_frame = 100;
+	$x_plot_gap = 1 * XSCALAR;
+
+	# Bounds of plot
+	$x_plot_min = $x_min + $x_left_frame;
+	$x_plot_max = (DPTS+1) * $x_plot_gap + $x_plot_min;
+	$y_plot_min = $y_min + $y_top_frame;
+	$y_plot_max = 300 + 1 + $y_plot_min;
+
+	# Upper bounds of Image
+	$x_max = $x_plot_max + $x_right_frame;
+	$y_max = $y_plot_max + $y_bottom_frame;
 	
 	# Collect most recent 24 hours WORTH of temp data
 	# Not actually limited to the past 24 hours
@@ -62,19 +75,19 @@ function basic_graph($data) {
 	$text_color = imagecolorallocate($ps, 233, 14, 91);
 
 	# Start plotting points
-	$x1 = 0;
-	$y1 = 0;
+	$x1 = $x_plot_min;
+	$y1 = $y_plot_min;
 	# Set first_p value as true to prevent drawing line for first point
 	$first_p = True;
 	# Plot each point
 	foreach ($temps_24h as $p) {
 		# Calculate x coordinate from previous value and gap-space
-		$x2 = $x1 + $x_gap;
+		$x2 = $x1 + $x_plot_gap;
 		# Calculate y coordinate from plot size and Temp value
 		# Bottom of image is y=y_max, so dividing by 2 goes to 
 		# middle of plot and subtracting the Temp value gives offical 
 		# y coordinate
-		$y2 = ($y_max/2) - $p;
+		$y2 = (($y_plot_max-$y_plot_min)/2) + $y_plot_min - $p;
 		# Draw a line connecting current and previous points if this
 		# is not the first point
 		if (!$first_p) {
@@ -88,14 +101,14 @@ function basic_graph($data) {
 	}
 
 	# Overlay a simple grid
-	$ps = basic_grid($ps, $x_max, $y_max);
+	$ps = basic_grid($ps, $x_plot_min, $x_plot_max, $y_plot_min, $y_plot_max);
 
 	# Export image and remove from memory
 	imagepng($ps);
 	imagedestroy($ps);
 }
 
-function basic_grid($im, $x_max, $y_max) {
+function basic_grid($im, $x_min, $x_max, $y_min, $y_max) {
 	# Spacing between x-grids -> measured in minutes
 	$x_spacing = 60 * XSCALAR;
 	# Spacing between y-grids -> measured in degF
@@ -107,27 +120,27 @@ function basic_grid($im, $x_max, $y_max) {
 		# Start @ "current" time (far right is x_max and longest ago)
 		# Draw lines from left to right, do not go beyond x_max
 		# This controls exit of loop instead of for-statement
-		if (($x = $x_spacing * $i) > $x_max) {
+		if (($x = ($x_spacing * $i) + $x_min) > $x_max) {
 			break;
 		}
-		imagedashedline($im, $x, 0, $x, $y_max, $grid_color);
+		imagedashedline($im, $x, $y_min, $x, $y_max, $grid_color);
 	}
 
 	# Horizontal grid lines
 	# Start with solid y=0degF line
-	$y_0 = $y_max / 2;
-	imageline($im, 0, $y_0, $x_max, $y_0, $grid_color);
+	$y_0 = ($y_max - $y_min)/2 + $y_min;
+	imageline($im, $x_min, $y_0, $x_max, $y_0, $grid_color);
 	# Draw remaining horizontal lines
 	for ($i=1; 1; $i++) {
 		# Check to make sure still in bounds of image
 		# This controls exit of loop instead of for-statement
 		# Also calculates how far this line will be from y=0
-		if (($y = $y_spacing * $i) + $y_0 > $y_max) {
+		if (($y = ($y_spacing * $i) ) + $y_0 > $y_max) {
 			break;
 		}
 		# Draw grid lines on either side of y=0
-		imagedashedline($im, 0, $y_0-$y, $x_max, $y_0-$y, $grid_color);
-		imagedashedline($im, 0, $y_0+$y, $x_max, $y_0+$y, $grid_color);
+		imagedashedline($im, $x_min, $y_0-$y, $x_max, $y_0-$y, $grid_color);
+		imagedashedline($im, $x_min, $y_0+$y, $x_max, $y_0+$y, $grid_color);
 	}
 
 	return $im;
