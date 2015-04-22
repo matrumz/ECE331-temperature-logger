@@ -1,10 +1,13 @@
 <?php
 header("Content-Type: image/png");
+# Number of data points in 24 hours where 1 point=1 minute
 define ("DPTS", 1440);
 # YSCALAR => how many pts per degF
 define ("YSCALAR", 1);
 # XSCALAR => how many pts per minute
 define ("XSCALAR", 1);
+define ("FONT", 
+	"/usr/share/fonts/truetype/freefont/FreeMonoOblique.ttf");
 $protocol = "sqlite";
 $database = "temp.db";
 $table = "T";
@@ -105,6 +108,12 @@ function basic_graph($data)
 	$ps = basic_grid($ps, $x_plot_min, $x_plot_max, $y_plot_min, 
 								$y_plot_max);
 
+	# Add axis labels
+	imagettftext($ps, 20, 90, $x_min+30, $y_max*.60, $text_color, FONT, 
+							'DEGREES (F)');
+	imagettftext($ps, 20, 0, $x_max*.45, $y_max-10, $text_color, FONT, 
+							'TIME FROM NOW (Hr)');
+
 	# Export image and remove from memory
 	imagepng($ps);
 	imagedestroy($ps);
@@ -146,6 +155,10 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max)
 								$grid_color);
 		imagedashedline($im, $x_min, $y_0+$y, $x_max, $y_0+$y, 
 								$grid_color);
+		# Y grid labels
+		$label = $i * $y_spacing;
+		imagettftext($im, 6, 0, $x_min-16, $y_0-$y+3, $grid_color, FONT, "$label");
+		imagettftext($im, 6, 0, $x_min-21, $y_0+$y+3, $grid_color, FONT, "-$label");
 	}
 
 	return $im;
