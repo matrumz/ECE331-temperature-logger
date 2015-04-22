@@ -3,7 +3,7 @@ header("Content-Type: image/png");
 # Number of data points in 24 hours where 1 point=1 minute
 define ("DPTS", 1440);
 # YSCALAR => how many pts per degF
-define ("YSCALAR", 1);
+define ("YSCALAR", 2);
 # XSCALAR => how many pts per minute
 define ("XSCALAR", 1);
 define ("FONT", 
@@ -58,14 +58,14 @@ function basic_graph($data)
 	$x_plot_min = $x_min + $x_left_frame;
 	$x_plot_max = (DPTS+1) * $x_plot_gap + $x_plot_min;
 	$y_plot_min = $y_min + $y_top_frame;
-	$y_plot_max = 200 + $y_plot_min;
+	$y_plot_max = 400 + $y_plot_min;
 
 	# Upper bounds of Image
 	$x_max = $x_plot_max + $x_right_frame;
 	$y_max = $y_plot_max + $y_bottom_frame;
 
 	# y=0
-	$y_0 = $y_plot_max - 40;
+	$y_0 = $y_plot_max - 100;
 	
 	# Collect most recent 24 hours WORTH of temp data
 	# Not actually limited to the past 24 hours
@@ -89,8 +89,6 @@ function basic_graph($data)
 	$first_p = True;
 	# Plot each point
 	foreach ($temps_24h as $p) {
-		# Scale temperature
-		$p /= YSCALAR;
 		# Calculate x coordinate from previous value and gap-space
 		$x2 = $x1 + $x_plot_gap;
 		# Calculate y coordinate from y=0 and Temp value
@@ -128,7 +126,7 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 	# Spacing between x-grids -> measured in minutes
 	$x_spacing = 60 * XSCALAR;
 	# Spacing between y-grids -> measured in degF
-	$y_spacing = 10 * YSCALAR;
+	$y_spacing = 10;
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
 	# Label font size
 	$fs = 7;
@@ -163,7 +161,7 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 	# Draw upper horizontal grid lines
 	for ($i=1; 1; $i++) {
 		# Check to stay in bounds
-		if ($y_0 - ($y = $y_spacing * $i) < $y_min) {
+		if ($y_0 - ($y = $y_spacing * $i * YSCALAR) < $y_min) {
 			break;
 		}
 		imagedashedline($im, $x_min, $y_0-$y, $x_max, $y_0-$y, 
@@ -178,7 +176,7 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 	# Draw lower horizontal grid lines
 	for ($i=1; 1; $i++) {
 		# Check to stay in bounds
-		if ($y_0 + ($y = $y_spacing * $i) > $y_max) {
+		if ($y_0 + ($y = $y_spacing * $i * YSCALAR) > $y_max) {
 			break;
 		}
 		imagedashedline($im, $x_min, $y_0+$y, $x_max, $y_0+$y, 
