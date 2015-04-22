@@ -11,7 +11,11 @@ define ("FONT",
 $protocol = "sqlite";
 $database = "temp.db";
 $table = "T";
-$qry = "SELECT * FROM T ORDER BY Date DESC, Time DESC;";
+$smart_qry = "SELECT * FROM T 
+		ORDER BY Date DESC, Time DESC;";
+$basic_qry = "SELECT * FROM T 
+		WHERE Temperature IS NOT NULL 
+		ORDER BY Date DESC, Time DESC;";
 $data;
 
 # Connect to database and pull all data
@@ -21,7 +25,7 @@ try {
 	# Set errormode to Exceptions
 	$dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 	# Capture table data
-	$db_data = $dbh->query($qry);
+	$db_data = $dbh->query($basic_qry);
 	#$dbh->closeCursor();
 	# Put into PHP array
 	$data = $db_data->fetchAll();
