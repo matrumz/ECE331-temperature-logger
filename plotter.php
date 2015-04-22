@@ -44,10 +44,10 @@ function basic_graph($data)
 	# Lower bounds and frame sizes of image
 	$x_min = 0;
 	$y_min = 0;
-	$x_left_frame = 100;
+	$x_left_frame = 75;
 	$x_right_frame = 10;
 	$y_top_frame = 10;
-	$y_bottom_frame = 100;
+	$y_bottom_frame = 50;
 	$x_plot_gap = 1 * XSCALAR;
 
 	# Bounds of plot
@@ -109,9 +109,9 @@ function basic_graph($data)
 
 	# Add axis labels
 	$axis_label_color = imagecolorallocate($ps, 0, 0, 0);
-	imagettftext($ps, 20, 90, $x_min+30, $y_max*.60, $axis_label_color, 
+	imagettftext($ps, 20, 90, $x_min+30, $y_plot_max, $axis_label_color, 
 						FONT, 'DEGREES (F)');
-	imagettftext($ps, 20, 0, $x_max*.45, $y_max-10, $axis_label_color, 
+	imagettftext($ps, 20, 0, $x_plot_min, $y_max-10, $axis_label_color, 
 						FONT, 'TIME FROM NOW (Hr)');
 
 	# Export image and remove from memory
