@@ -3,7 +3,7 @@ header("Content-Type: image/png");
 # Number of data points in 24 hours where 1 point=1 minute
 define ("DPTS", 1440);
 # YSCALAR => how many pts per degF
-define ("YSCALAR", 1);
+define ("YSCALAR", 2);
 # XSCALAR => how many pts per minute
 define ("XSCALAR", 1);
 define ("FONT", 
@@ -41,9 +41,6 @@ basic_graph($data);
 
 function basic_graph($data) 
 {
-	# Follows tutorial from:
-	# http://www.plus2net.com/php_tutorial/gd-linegp.php
-
 	# Lower bounds and frame sizes of image
 	$x_min = 0;
 	$y_min = 0;
@@ -57,11 +54,14 @@ function basic_graph($data)
 	$x_plot_min = $x_min + $x_left_frame;
 	$x_plot_max = (DPTS+1) * $x_plot_gap + $x_plot_min;
 	$y_plot_min = $y_min + $y_top_frame;
-	$y_plot_max = 300 + 1 + $y_plot_min;
+	$y_plot_max = 200 + 1 + $y_plot_min;
 
 	# Upper bounds of Image
 	$x_max = $x_plot_max + $x_right_frame;
 	$y_max = $y_plot_max + $y_bottom_frame;
+
+	# y=0
+	$y_0 = $y_plot_max - 60;
 	
 	# Collect most recent 24 hours WORTH of temp data
 	# Not actually limited to the past 24 hours
@@ -85,13 +85,12 @@ function basic_graph($data)
 	$first_p = True;
 	# Plot each point
 	foreach ($temps_24h as $p) {
+		# Scale temperature
+		$p /= YSCALAR;
 		# Calculate x coordinate from previous value and gap-space
 		$x2 = $x1 + $x_plot_gap;
-		# Calculate y coordinate from plot size and Temp value
-		# Bottom of image is y=y_max, so dividing by 2 goes to 
-		# middle of plot and subtracting the Temp value gives offical 
-		# y coordinate
-		$y2 = (($y_plot_max-$y_plot_min)/2) + $y_plot_min - $p;
+		# Calculate y coordinate from y=0 and Temp value
+		$y2 = $y_0 - $p;
 		# Draw a line connecting current and previous points if this
 		# is not the first point
 		if (!$first_p) {
@@ -106,7 +105,7 @@ function basic_graph($data)
 
 	# Overlay a simple grid
 	$ps = basic_grid($ps, $x_plot_min, $x_plot_max, $y_plot_min, 
-								$y_plot_max);
+							$y_plot_max, $y_0);
 
 	# Add axis labels
 	$axis_label_color = imagecolorallocate($ps, 0, 0, 0);
@@ -120,13 +119,19 @@ function basic_graph($data)
 	imagedestroy($ps);
 }
 
-function basic_grid($im, $x_min, $x_max, $y_min, $y_max) 
+function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0) 
 {
 	# Spacing between x-grids -> measured in minutes
 	$x_spacing = 60 * XSCALAR;
 	# Spacing between y-grids -> measured in degF
 	$y_spacing = 10 * YSCALAR;
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
+	# Label font size
+	$fs = 7;
+	# Y label x-offset
+	$yxo = 18;
+	# X label y-offset
+	$xyo = 20;
 
 	# Vertical grid lines
 	for ($i=0; 1; $i++) {
@@ -139,33 +144,38 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max)
 		imagedashedline($im, $x, $y_min, $x, $y_max, $grid_color);
 
 		# X grid labels
-		imagettftext($im, 6, 45, $x-5, $y_max+17, $grid_color, 
+		imagettftext($im, $fs, 45, $x-5, $y_max+$xyo, $grid_color, 
 							FONT, "-$i");
 
 	}
 
 	# Horizontal grid lines
 	# Start with solid y=0degF line
-	$y_0 = ($y_max - $y_min)/2 + $y_min;
 	imageline($im, $x_min, $y_0, $x_max, $y_0, $grid_color);
-	# Draw remaining horizontal lines
+	# Draw upper horizontal grid lines
 	for ($i=1; 1; $i++) {
-		# Check to make sure still in bounds of image
-		# This controls exit of loop instead of for-statement
-		# Also calculates how far this line will be from y=0
-		if (($y = $y_spacing * $i) + $y_0 > $y_max) {
+		# Check to stay in bounds
+		if ($y_0 - ($y = $y_spacing * $i) < $y_min) {
 			break;
 		}
-		# Draw grid lines on either side of y=0
 		imagedashedline($im, $x_min, $y_0-$y, $x_max, $y_0-$y, 
 								$grid_color);
+		# Labels lines
+		$label = $i * $y_spacing;
+		imagettftext($im, $fs, 0, $x_min-$yxo, $y_0-$y+3, $grid_color, 
+							FONT, "$label");
+	}
+	# Draw lower horizontal grid lines
+	for ($i=1; 1; $i++) {
+		# Check to stay in bounds
+		if ($y_0 + ($y = $y_spacing * $i) > $y_max) {
+			break;
+		}
 		imagedashedline($im, $x_min, $y_0+$y, $x_max, $y_0+$y, 
 								$grid_color);
-		# Y grid labels
+		# Labels lines
 		$label = $i * $y_spacing;
-		imagettftext($im, 6, 0, $x_min-16, $y_0-$y+3, $grid_color, 
-							FONT, "$label");
-		imagettftext($im, 6, 0, $x_min-21, $y_0+$y+3, $grid_color, 
+		imagettftext($im, $fs, 0, $x_min-$yxo, $y_0+$y+3, $grid_color, 
 							FONT, "-$label");
 	}
 
