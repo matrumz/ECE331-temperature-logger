@@ -32,7 +32,7 @@ sub get_K_temp {
 	my $raw_temp = get_raw_temp();
 
 	# Convert raw ADC temperature value to Kelvin if value is valid
-	return $raw_temp if $raw_temp < 0;
+	return $raw_temp if $raw_temp <= -500;
 	return $a*$raw_temp + $b;
 }
 
@@ -42,6 +42,6 @@ sub get_F_temp {
 	my $K_temp = get_K_temp();
 
 	# Convert Kelvin temperature value to Fahrenheit if value is valid
-	return $K_temp if $K_temp < 0;
+	return $K_temp if $K_temp <= -500;
 	return ($K_temp - 273.15)*1.8 + 32.0;
 }

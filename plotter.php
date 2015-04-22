@@ -61,7 +61,7 @@ function basic_graph($data)
 	$y_max = $y_plot_max + $y_bottom_frame;
 
 	# y=0
-	$y_0 = $y_plot_max -100;#- 40;
+	$y_0 = $y_plot_max - 40;
 	
 	# Collect most recent 24 hours WORTH of temp data
 	# Not actually limited to the past 24 hours
@@ -203,6 +203,7 @@ function get_y_off($val)
 	} else if ($val <= -10) {
 		return 17;
 	} else {
+		# case 0
 		return 7;
 	}
 }
