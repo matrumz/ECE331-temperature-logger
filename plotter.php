@@ -3,7 +3,7 @@ header("Content-Type: image/png");
 # Number of data points in 24 hours where 1 point=1 minute
 define ("DPTS", 1440);
 # YSCALAR => how many pts per degF
-define ("YSCALAR", 2);
+define ("YSCALAR", 1);
 # XSCALAR => how many pts per minute
 define ("XSCALAR", 1);
 define ("FONT", 
@@ -61,7 +61,7 @@ function basic_graph($data)
 	$y_max = $y_plot_max + $y_bottom_frame;
 
 	# y=0
-	$y_0 = $y_plot_max - 60;
+	$y_0 = $y_plot_max - 40;
 	
 	# Collect most recent 24 hours WORTH of temp data
 	# Not actually limited to the past 24 hours
