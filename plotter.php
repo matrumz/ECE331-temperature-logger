@@ -203,7 +203,6 @@ function get_y_off($val)
 	} else if ($val <= -10) {
 		return 17;
 	} else {
-		# case 0
 		return 7;
 	}
 }

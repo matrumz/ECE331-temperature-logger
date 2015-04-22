@@ -37,7 +37,7 @@ while(1) {
 	my $temp = `$query`;
 	# If sample is valid, insert temp, otherwise insert NULL
 	$dbh->do($update_table_stmt."VALUES(".
-		($temp > -500 ? $temp:"NULL").
+		($temp >= -500 ? $temp:"NULL").
 		");") or warn $DBI::errstr;
 	sleep 60;	
 }
