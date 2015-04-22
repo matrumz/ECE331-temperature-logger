@@ -109,10 +109,11 @@ function basic_graph($data)
 								$y_plot_max);
 
 	# Add axis labels
-	imagettftext($ps, 20, 90, $x_min+30, $y_max*.60, $text_color, FONT, 
-							'DEGREES (F)');
-	imagettftext($ps, 20, 0, $x_max*.45, $y_max-10, $text_color, FONT, 
-							'TIME FROM NOW (Hr)');
+	$axis_label_color = imagecolorallocate($ps, 0, 0, 0);
+	imagettftext($ps, 20, 90, $x_min+30, $y_max*.60, $axis_label_color, 
+						FONT, 'DEGREES (F)');
+	imagettftext($ps, 20, 0, $x_max*.45, $y_max-10, $axis_label_color, 
+						FONT, 'TIME FROM NOW (Hr)');
 
 	# Export image and remove from memory
 	imagepng($ps);
@@ -136,6 +137,11 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max)
 			break;
 		}
 		imagedashedline($im, $x, $y_min, $x, $y_max, $grid_color);
+
+		# X grid labels
+		imagettftext($im, 6, 45, $x-5, $y_max+17, $grid_color, 
+							FONT, "-$i");
+
 	}
 
 	# Horizontal grid lines
@@ -157,8 +163,10 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max)
 								$grid_color);
 		# Y grid labels
 		$label = $i * $y_spacing;
-		imagettftext($im, 6, 0, $x_min-16, $y_0-$y+3, $grid_color, FONT, "$label");
-		imagettftext($im, 6, 0, $x_min-21, $y_0+$y+3, $grid_color, FONT, "-$label");
+		imagettftext($im, 6, 0, $x_min-16, $y_0-$y+3, $grid_color, 
+							FONT, "$label");
+		imagettftext($im, 6, 0, $x_min-21, $y_0+$y+3, $grid_color, 
+							FONT, "-$label");
 	}
 
 	return $im;
