@@ -8,7 +8,7 @@ use DBI;
 
 # Database connection setup values
 my $driver = "SQLite";
-my $database = "temp.db";
+my $database = "/var/www/temp.db";
 my $dsn = "DBI:$driver:dbname=$database";
 my $userid = "";
 my $password = "";
@@ -21,7 +21,7 @@ my $create_table_stmt = "CREATE TABLE IF NOT EXISTS $table(
 	Time TEXT DEFAULT (TIME('now', 'localtime')) NOT NULL, 
 	$column REAL);";
 my $update_table_stmt = "INSERT INTO $table($column) ";
-my $query = "./query_sensor.pl";
+my $query = "/home/mat/Documents/ECE331/Projects/2/temperature-logger/query_sensor.pl";
 
 # Open database or create one if one doesn't exist
 my $dbh = DBI->connect($dsn, $userid, $password, 
