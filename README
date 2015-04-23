@@ -1,0 +1,12 @@
+ECE 331 Spring 2015 Project #2
+by Mathew Rumsey
+
+This project is a web-displayed temperature logger. Using Perl scripts and 
+i2ctools, raw ADC temperature values are read by a Raspberry Pi, from the 
+XMEGA expansion board developed by Andrew Sheaff, via the I2C bus. This 
+acquisition occurs every minute, and then the raw data is converted into 
+degree F values by the initial Perl script. This calculated value is inserted
+into an SQLite database by another Perl script where a PHP script will acquire
+24 hours worth of data entries. This PHP script will then generate a .png image
+plotting the temperature values acquired by the PHP script. This process is 
+entirely automated.
