@@ -126,7 +126,7 @@ function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0)
 	# Spacing between x-grids -> measured in minutes
 	$x_spacing = 60 * XSCALAR;
 	# Spacing between y-grids -> measured in degF
-	$y_spacing = 5;
+	$y_spacing = 10;
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
 	# Label font size
 	$fs = 7;

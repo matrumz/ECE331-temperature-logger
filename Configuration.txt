@@ -1,12 +1,15 @@
 This file contains instructions for configuring the Raspberry Pi (RPi) used in this project. 
 '#' at the beginning of a line means this is a command entered onto the command-line verbatim.
 
+Always make sure repositories are up to date with:
+#sudo apt-get update
+
 SETTING UP I2C
 Follow the steps found on the following site.
 https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c
 
 CREATING SQLITE DATABASE (or user can just create temp.db and let updateDB.pl create table)
-#sudo apt-get install sqlite3
+#sudo apt-get install sqlite3 sqlitebrowser
 #sqlite3 temp.db
 (now within sqlite program)(will see 'sqlite>' instead of 'USER@MACHINE PWD $' at beginning of line)
 #create table T(Date TEXT DEFAULT (DATE('now', 'localtime')) NOT NULL, Time TEXT DEFAULT (TIME('now', 'localtime')) NOT NULL, Temperature REAL);
@@ -14,3 +17,19 @@ CREATING SQLITE DATABASE (or user can just create temp.db and let updateDB.pl cr
 
 SET UP PERL TO UPDATE SQLITE DATABASE
 #sudo apt-get install libdbi-perl libdbd-sqlite3-perl
+
+INSTALL & CONFIGURE WEBSERVER
+#sudo apt-get install lighttpd php5 php5-cgi php5-cli php5-gd php-db php-sqlite
+#lighttpd-enable-mod fastcgi
+#lighttpd-enable-mod fastcgi-php
+#service lighttpd force-reload
+#cd /etc/lighttpd/conf-enabled
+#ln -s ../conf-available/15-fastcgi-php.conf
+#ln -s ../conf-available/10-fastcgi.conf
+#service lighttpd force-reload
+create 'index.html' or 'index.php' in /var/www with permissions 755
+
+START PERL UPDATE ON BOOT
+#sudo vim /etc/rc.local
+append the following line right before exit 0:
+/home/mat/Documents/ECE331/Projects/2/temperature-logger/updateDB.pl &
