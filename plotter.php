@@ -1,13 +1,20 @@
 <?php
+# This PHP script generates a graph based on the data in the temperature
+# database and exports it as a .png image that is displayed by index.php
+
+# This script exports .png content
 header("Content-Type: image/png");
 # Number of data points in 24 hours where 1 point=1 minute
 define ("DPTS", 1440);
-# YSCALAR => how many pts per degF
+# YSCALAR => how many points per degF
 define ("YSCALAR", 2);
-# XSCALAR => how many pts per minute
+# XSCALAR => how many points per minute
 define ("XSCALAR", 1);
+# Define a font for text (shortens code nicely)
 define ("FONT", 
 	"/usr/share/fonts/truetype/freefont/FreeMonoOblique.ttf");
+
+# Database connection and interaction constants
 $protocol = "sqlite";
 $database = "temp.db";
 $table = "T";
@@ -26,7 +33,6 @@ try {
 	$dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 	# Capture table data
 	$db_data = $dbh->query($basic_qry);
-	#$dbh->closeCursor();
 	# Put into PHP array
 	$data = $db_data->fetchAll();
 } catch (PDOException $e) {
@@ -54,18 +60,18 @@ function basic_graph($data)
 	$y_bottom_frame = 50;
 	$x_plot_gap = 1 * XSCALAR; # DON'T CHANGE THIS
 
-	# Bounds of plot
+	# Bounds of plot - ONLY CHANGE THE CONSTANT IN y_plot_max
 	$x_plot_min = $x_min + $x_left_frame;
 	$x_plot_max = (DPTS+1) * $x_plot_gap + $x_plot_min;
 	$y_plot_min = $y_min + $y_top_frame;
 	$y_plot_max = 400 + $y_plot_min;
 
-	# Upper bounds of Image
+	# Upper bounds of Image - DON'T CHANGE THESE
 	$x_max = $x_plot_max + $x_right_frame;
 	$y_max = $y_plot_max + $y_bottom_frame;
 
 	# y=0
-	$y_0 = $y_plot_max - 100;
+	$y_0 = $y_plot_max - 100; # Adjust constant to move graph y=0 height
 	
 	# Collect most recent 24 hours WORTH of temp data
 	# Not actually limited to the past 24 hours
@@ -121,12 +127,14 @@ function basic_graph($data)
 	imagedestroy($ps);
 }
 
+# Creates a grid over a plot with passed parameters
 function basic_grid($im, $x_min, $x_max, $y_min, $y_max, $y_0) 
 {
 	# Spacing between x-grids -> measured in minutes
-	$x_spacing = 60 * XSCALAR;
+	$x_spacing = 60 * XSCALAR; # Change constant to adjust x-grid spacing
 	# Spacing between y-grids -> measured in degF
-	$y_spacing = 10;
+	$y_spacing = 10; # Change to adjust y-grid spacing
+	# Grid color = black
 	$grid_color = imagecolorallocate($im, 0, 0, 0);
 	# Label font size
 	$fs = 7;

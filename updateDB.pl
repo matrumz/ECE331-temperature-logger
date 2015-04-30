@@ -3,6 +3,11 @@ use strict;
 use warnings;
 use DBI;
 
+# This script will be started @ boot by rc.local
+# Provided no errors occur and no system shutdown -> this program will "never"
+# stop running. It will put itself to sleep for 1 minute every iteration of
+# its infinite loop to update the temperature database every minute
+
 # The form of this script is used from:
 # http://www.tutorialspoint.com/sqlite/sqlite_perl.htm
 
@@ -35,10 +40,11 @@ $dbh->do($create_table_stmt) or die $DBI::errstr;
 while(1) {
 	# Take a sample
 	my $temp = `$query`;
-	# If sample is valid, insert temp, otherwise insert NULL
+	# If sample is valid, insert temp, otherwise insert NULL into database
 	$dbh->do($update_table_stmt."VALUES(".
 		($temp >= -500 ? $temp:"NULL").
 		");") or warn $DBI::errstr;
+	# Sleep for a minute then run loop again
 	sleep 60;	
 }
 

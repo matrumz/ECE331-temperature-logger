@@ -2,12 +2,17 @@
 use strict;
 use warnings;
 
+# This script contains functions to return the ADC temperature value in a 
+# variety of different formats. It is currently hard-coded to only return
+# Fahrenheit values when called as that is the requirement for the project.
+
 # Print Temperature in Degrees Fahrenheit
 print get_F_temp()."\n";
 
 # Get raw ADC temperature value from XMEGA-RPi-expansion
 sub get_raw_temp {
 	# Execute i2c-tools commands to get 2bytes of temp data
+	# Place return values in an array
 	my $command = "sudo i2cget -y 1 0x41 6; sudo i2cget -y 1 0x41 7";
 	my @c_ret = `$command`;
 
